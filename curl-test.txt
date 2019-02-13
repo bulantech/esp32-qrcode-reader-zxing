@@ -1,0 +1,1 @@
+curl -i -X POST -H "Content-Type: multipart/form-data" -F "data=@QR_Code1-2.jpg" https://zxing.org/w/decode
