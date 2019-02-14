@@ -1,0 +1,23 @@
+POST https://zxing.org/w/decode HTTP/1.1
+Host: zxing.org
+Connection: keep-alive
+Content-Length: 23228
+Cache-Control: max-age=0
+Origin: https://zxing.org
+Upgrade-Insecure-Requests: 1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryMG3O2MHnR2NlxANZ
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.96 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+Referer: https://zxing.org/w/decode.jspx
+Accept-Encoding: gzip, deflate, br
+Accept-Language: th,en-US;q=0.9,en;q=0.8
+
+------WebKitFormBoundaryMG3O2MHnR2NlxANZ
+Content-Disposition: form-data; name="f"; filename="qrr.jpg"
+Content-Type: image/jpeg
+
+.
+.
+.
+
+------WebKitFormBoundaryMG3O2MHnR2NlxANZ--
