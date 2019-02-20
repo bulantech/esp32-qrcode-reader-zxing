@@ -839,7 +839,8 @@ void setup() {
 //
 //    client.stop();
 
-    String url = "/w/decode";
+//  String url = "https://zxing.org/w/decode"; 
+  String url = "/w/decode";
   Serial.print("requesting URL: ");
   Serial.println(url);
 
@@ -862,7 +863,16 @@ void setup() {
               "Content-Length: " + String(full_length, DEC) + "\r\n" +         
               "Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryieIsmGgKag7ktdTw" + "\r\n" + 
               "User-Agent: BuildFailureDetectorESP8266" + "\r\n\r\n");
-  client.print(headerUrl);
+//  client.print(headerUrl);
+
+  client.println("POST " + url + " HTTP/1.1");
+  client.println("Host: " + String(host) );
+  client.println("Connection: keep-alive");
+  client.println("Content-Length: " + String(full_length, DEC));
+  client.println("Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryieIsmGgKag7ktdTw");
+  client.println("User-Agent: BuildFailureDetectorESP8266");
+  client.println();
+  
   client.print(start_request);
   Serial.println(headerUrl + start_request);
 
@@ -873,18 +883,34 @@ void setup() {
   Serial.println(end_request);
        
   Serial.println("request sent");
-  while (!client.connected()) {
-    Serial.println('.');
-  }
-
-  String content = "";
-  while (client.available()) {
-    char ch = static_cast<char>(client.read());
-    content += ch;
-  }
-  
   Serial.println("Content==========");
   Serial.println();
+
+  String content = ";)";
+  
+//  while (!client.connected()) {
+//    Serial.println('.');
+//  }
+
+//  while (client.available()) {
+//    char ch = static_cast<char>(client.read());
+//    content += ch;
+//  }
+
+  while (client.connected()) {
+    String line = client.readStringUntil('\n');
+    if (line == "\r") {
+      Serial.println("headers received");
+      break;
+    }
+  }
+  // if there are incoming bytes available
+  // from the server, read them and print them:
+  while (client.available()) {
+    char c = client.read();
+    Serial.write(c);
+  }
+    
   Serial.println(content);
   Serial.println();
   Serial.println("End content==========");
