@@ -4,8 +4,8 @@
 #include <WiFiClientSecure.h>
 
 CAMERA cam;
-char ssid[] = "WAYUPONG_WIFI";      //  your network SSID (name)
-char pass[] = "59172310183";   // your network password
+char ssid[] = "HUAWEI";      //  your network SSID (name)
+char pass[] = "5917231013";   // your network password
 
 // www.howsmyssl.com root certificate authority, to verify the server
 // change it to your server root CA
@@ -100,9 +100,10 @@ void setup()
 void loop()
 {
 
-  if(!digitalRead(button)) {
+ if(!digitalRead(button)) {
     Serial.println("Button press..");
-    readQrCode();    
+    readQrCode();
+   //delay(1000);    
   }
   
   String httpreq;
@@ -201,7 +202,7 @@ void readQrCode() {
     
     uint16_t full_length;
     full_length = start_request.length() + cam.getSize() + end_request.length(); //f.size() // file size
-    Serial.println("full_length -> " + String(full_length) + "," + String(cam.getSize()) );
+    Serial.println("full_length -> " + String(full_length));
   
     clientS.println("POST " + url + " HTTP/1.1");
     clientS.println("Host: " + String(host) );
