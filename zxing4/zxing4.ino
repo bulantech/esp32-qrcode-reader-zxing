@@ -2,6 +2,8 @@
 #include "Camera_Exp.h"
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
+#include <MySQL_Connection.h>
+#include <MySQL_Cursor.h>
 
 CAMERA cam;
 char ssid[] = "HUAWEI";      //  your network SSID (name)
@@ -51,6 +53,18 @@ String http_boundary = "--123456789000000000000987654321\r\n";
 WiFiClient client;
 WiFiClientSecure clientS;
 
+// mysql ==========================
+IPAddress server_addr(27,254,172,48);  // IP of the MySQL *server* here
+MySQL_Connection conn(&client);
+MySQL_Cursor* cursor;
+char user[] = "qrcode"; // MySQL user login username
+char password[] = "@qrcode#"; // MySQL user login password
+
+const char QUERY_POP[] = "SELECT * FROM eermutio_qrcode.outqrcode ORDER BY Password;";
+char query[128];
+String stringOne, stringTwo;
+// ==========================
+
 #define button 17     // switch input Active Low
 #define BUTTON_RELAY 23 // Active Low
 #define OUTPUT_RELAY 22 
@@ -98,7 +112,11 @@ void setup()
   Serial.print(WiFi.localIP());
   Serial.println("/stream");
 
-
+  Serial.print("Connecting to SQL...  ");
+  if (conn.connect(server_addr, 3306, user, password))
+    Serial.println("OK.");
+  else
+    Serial.println("FAILED.");
 }
 
 void loop()
@@ -283,6 +301,81 @@ void readQrCode() {
   
     String result = content.substring(first + strSearch.length(), second);
     Serial.println("result: " + result);
+    mysqlComp(result);
   
   }
+}
+
+void mysqlComp(String qrcord) 
+{
+  stringOne = qrcord;
+  Serial.println("stringOne -> "+stringOne);
+  Serial.println("> Running SELECT with dynamically supplied parameter");
+
+  MySQL_Cursor *cur_mem = new MySQL_Cursor(&conn);
+
+  sprintf(query, QUERY_POP, 9000000);
+
+  cur_mem->execute(query);
+
+
+  column_names *cols = cur_mem->get_columns();
+  for (int f = 0; f < cols->num_fields; f++) {
+    //Serial.print(cols->fields[f]->name);
+    if (f < cols->num_fields-1) {
+    //  Serial.print("         :        ");
+    }
+  }
+  Serial.println();
+  // Read the rows and print them
+  row_values *row = NULL;
+  do {
+    row = cur_mem->get_next_row();
+    if (row != NULL) {
+      for (int f = 0; f < cols->num_fields; f++) {
+        Serial.print(row->values[0]);
+        stringTwo = String(row->values[0]);
+//      if (stringOne == stringTwo) {
+        if (stringOne.equals(stringTwo)) {
+          Serial.print("----------ok----------");
+          toggleRelay = HIGH;
+          digitalWrite(OUTPUT_RELAY, HIGH);
+          mysqlInsert(stringOne);
+        }
+        else
+        {
+          Serial.print("Fuckkkk");
+        }
+      }
+      Serial.println();
+    }
+    
+  } while (row != NULL);
+  // Deleting the cursor also frees up memory used
+  delete cur_mem;
+//  delay(5000);  
+}
+
+void mysqlInsert(String qrcord) {
+  Serial.println("Recording data. -> " + qrcord);
+  String str = "INSERT INTO eermutio_qrcode.inqrcode(PIN,Date) VALUES('" + qrcord + "',221118)"; 
+
+  // Length (with one extra character for the null terminator)
+  int str_len = str.length() + 1; 
+  
+  // Prepare the character array (the buffer) 
+  char INSERT_SQL[str_len];
+  
+  // Copy it over 
+  str.toCharArray(INSERT_SQL, str_len);
+
+//  char INSERT_SQL[] = "INSERT INTO eermutio_qrcode.inqrcode(PIN,Date) VALUES('A1999',221118)";
+  
+  // Initiate the query class instance
+  MySQL_Cursor *cur_mem = new MySQL_Cursor(&conn);
+  // Execute the query
+  cur_mem->execute(INSERT_SQL);
+  // Note: since there are no results, we do not need to read any data
+  // Deleting the cursor also frees up memory used
+  delete cur_mem;
 }
