@@ -52,6 +52,10 @@ WiFiClient client;
 WiFiClientSecure clientS;
 
 #define button 17     // switch input Active Low
+#define BUTTON_RELAY 23 // Active Low
+#define OUTPUT_RELAY 22 
+
+int toggleRelay = 0;
 
 void setup()
 {
@@ -104,6 +108,17 @@ void loop()
     Serial.println("Button press..");
     readQrCode();
    //delay(1000);    
+  }
+
+  //กดติด กดดับ on-off relay
+  if(!digitalRead(BUTTON_RELAY)) { 
+    toggleRelay = !toggleRelay;
+    Serial.println("BUTTON_RELAY press.." + String(toggleRelay) );
+    if(toggleRelay) {
+      digitalWrite(OUTPUT_RELAY, HIGH);
+    } else {
+      digitalWrite(OUTPUT_RELAY, LOW);    
+    }
   }
   
   String httpreq;
