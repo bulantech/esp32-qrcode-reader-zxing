@@ -112,11 +112,11 @@ void setup()
   Serial.print(WiFi.localIP());
   Serial.println("/stream");
 
-  Serial.print("Connecting to SQL...  ");
-  if (conn.connect(server_addr, 3306, user, password))
-    Serial.println("OK.");
-  else
-    Serial.println("FAILED.");
+//  Serial.print("Connecting to SQL...  ");
+//  if (conn.connect(server_addr, 3306, user, password))
+//    Serial.println("OK.");
+//  else
+//    Serial.println("FAILED.");
 }
 
 void loop()
@@ -310,6 +310,14 @@ void mysqlComp(String qrcord)
 {
   stringOne = qrcord;
   Serial.println("stringOne -> "+stringOne);
+
+  Serial.print("mysqlComp Connecting to SQL...  ");
+  if (conn.connect(server_addr, 3306, user, password))
+    Serial.println("OK.");
+  else
+    Serial.println("FAILED.");
+  delay(1000);
+    
   Serial.println("> Running SELECT with dynamically supplied parameter");
 
   MySQL_Cursor *cur_mem = new MySQL_Cursor(&conn);
@@ -358,6 +366,14 @@ void mysqlComp(String qrcord)
 
 void mysqlInsert(String qrcord) {
   Serial.println("Recording data. -> " + qrcord);
+
+  Serial.print("mysqlInsert Connecting to SQL...  ");
+  if (conn.connect(server_addr, 3306, user, password))
+    Serial.println("OK.");
+  else
+    Serial.println("FAILED.");
+  delay(1000);
+  
   String str = "INSERT INTO eermutio_qrcode.inqrcode(PIN,Date) VALUES('" + qrcord + "',221118)"; 
 
   // Length (with one extra character for the null terminator)
